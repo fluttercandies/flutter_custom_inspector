@@ -62,8 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Text('Press the FAB to toggle the custom inspector.'),
             ValueListenableBuilder<bool>(
-              valueListenable:
-                  WidgetInspectorController.isEnabled,
+              valueListenable: InspectorController.isEnabled,
               builder: (_, bool isEnabled, __) {
                 return Text(
                   'The WidgetInspector has been '
@@ -75,12 +74,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: ValueListenableBuilder<bool>(
-        valueListenable:
-            WidgetInspectorController.isEnabled,
+        valueListenable: InspectorController.isEnabled,
         builder: (_, bool isEnabled, __) {
           return FloatingActionButton(
             onPressed: () {
-              WidgetInspectorController.turn(!isEnabled);
+              InspectorController.turn(!isEnabled);
             },
             tooltip: 'Increment',
             child: const Icon(Icons.search),

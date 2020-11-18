@@ -3,10 +3,9 @@
 /// [Date] 11/18/20 5:51 PM
 ///
 import 'package:flutter/foundation.dart';
-import 'package:custom_inspector/src/constants.dart';
 
-class WidgetInspectorController {
-  const WidgetInspectorController._();
+class InspectorController {
+  const InspectorController._();
 
   static final ValueNotifier<bool> isEnabled =
   ValueNotifier<bool>(false);
