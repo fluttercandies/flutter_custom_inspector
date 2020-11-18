@@ -16,23 +16,10 @@ class MyApp extends StatelessWidget {
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
       builder: (BuildContext builderContext, Widget builderChild) {
-        return ValueListenableBuilder<bool>(
-          valueListenable:
-              WidgetInspectorController.isEnabled,
-          builder: (_, bool isEnabled, __) {
-            if (isEnabled) {
-              return CustomWidgetInspector(
-                child: builderChild,
-                selectButtonBuilder: (_, VoidCallback onPressed) {
-                  return FloatingActionButton(
-                    child: const Icon(Icons.search),
-                    onPressed: onPressed,
-                    mini: true,
-                  );
-                },
-              );
-            }
-            return builderChild;
+        return InspectorWrapper(
+          child: builderChild,
+          tooltipBuilder: (Element element) {
+            return 'Holy molly, this is a ${element.runtimeType} element!';
           },
         );
       },
