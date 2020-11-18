@@ -2225,6 +2225,7 @@ class CustomWidgetInspector extends StatefulWidget {
     Key key,
     @required this.child,
     @required this.selectButtonBuilder,
+    this.tooltipBuilder,
   })  : assert(child != null),
         super(key: key);
 
@@ -2236,6 +2237,8 @@ class CustomWidgetInspector extends StatefulWidget {
   /// The `onPressed` callback passed as an argument to the builder should be
   /// hooked up to the returned widget.
   final InspectorSelectButtonBuilder selectButtonBuilder;
+
+  final String Function(Element element) tooltipBuilder;
 
   @override
   _CustomWidgetInspectorState createState() => _CustomWidgetInspectorState();
@@ -2461,7 +2464,10 @@ class _CustomWidgetInspectorState extends State<CustomWidgetInspector>
           bottom: _kInspectButtonMargin,
           child: widget.selectButtonBuilder(context, _handleEnableSelect),
         ),
-      _InspectorOverlay(selection: selection),
+      _InspectorOverlay(
+        selection: selection,
+        tooltipBuilder: widget.tooltipBuilder,
+      ),
     ]);
   }
 }
@@ -2545,13 +2551,18 @@ class _InspectorOverlay extends LeafRenderObjectWidget {
   const _InspectorOverlay({
     Key key,
     @required this.selection,
+    this.tooltipBuilder,
   }) : super(key: key);
 
   final InspectorSelection selection;
+  final String Function(Element element) tooltipBuilder;
 
   @override
   _RenderInspectorOverlay createRenderObject(BuildContext context) {
-    return _RenderInspectorOverlay(selection: selection);
+    return _RenderInspectorOverlay(
+      selection: selection,
+      tooltipBuilder: tooltipBuilder,
+    );
   }
 
   @override
@@ -2563,9 +2574,13 @@ class _InspectorOverlay extends LeafRenderObjectWidget {
 
 class _RenderInspectorOverlay extends RenderBox {
   /// The arguments must not be null.
-  _RenderInspectorOverlay({@required InspectorSelection selection})
-      : _selection = selection,
-        assert(selection != null);
+  _RenderInspectorOverlay({
+    @required InspectorSelection selection,
+    this.tooltipBuilder,
+  }) : _selection = selection,
+       assert(selection != null);
+
+  final String Function(Element element) tooltipBuilder;
 
   InspectorSelection get selection => _selection;
   InspectorSelection _selection;
@@ -2595,6 +2610,7 @@ class _RenderInspectorOverlay extends RenderBox {
       overlayRect: Rect.fromLTWH(offset.dx, offset.dy, size.width, size.height),
       selection: selection,
       rootRenderObject: parent is RenderObject ? parent as RenderObject : null,
+      tooltipBuilder: tooltipBuilder,
     ));
   }
 }
@@ -2677,6 +2693,7 @@ class _InspectorOverlayLayer extends Layer {
     @required this.overlayRect,
     @required this.selection,
     @required this.rootRenderObject,
+    this.tooltipBuilder,
   })  : assert(overlayRect != null),
         assert(selection != null) {
     bool inDebugMode = false;
@@ -2705,6 +2722,8 @@ class _InspectorOverlayLayer extends Layer {
   /// Widget inspector root render object. The selection overlay will be painted
   /// with transforms relative to this render object.
   final RenderObject rootRenderObject;
+
+  final String Function(Element element) tooltipBuilder;
 
   _InspectorOverlayRenderState _lastState;
 
@@ -2739,7 +2758,8 @@ class _InspectorOverlayLayer extends Layer {
     final _InspectorOverlayRenderState state = _InspectorOverlayRenderState(
       overlayRect: overlayRect,
       selected: _TransformedRect(selected, rootRenderObject),
-      tooltip: selection.currentElement.toStringShort(),
+      tooltip: tooltipBuilder?.call(selection.currentElement) ??
+          selection.currentElement.toString(),
       textDirection: TextDirection.ltr,
       candidates: candidates,
     );
