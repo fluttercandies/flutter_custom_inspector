@@ -18,9 +18,35 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext builderContext, Widget builderChild) {
         return InspectorWrapper(
           child: builderChild,
+          selectButtonBuilder: (
+            _,
+            VoidCallback onPressed,
+          ) {
+            return MaterialButton(
+              color: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const <Widget>[
+                  Text('👻 ', style: TextStyle(fontSize: 30)),
+                  Text('Keep inspecting', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+              onPressed: onPressed,
+            );
+          },
           tooltipBuilder: (Element element) {
             return 'Holy molly, this is a ${element.runtimeType} element!';
           },
+          tooltipBackgroundColor: Colors.red,
+          tooltipStyle: const TextStyle(fontSize: 14.0),
+          maxTooltipLines: 10,
+          highlightedRenderObjectFillColor:
+              const Color.fromARGB(128, 255, 128, 128),
+          highlightedRenderObjectBorderColor:
+              const Color.fromARGB(128, 128, 64, 64),
         );
       },
     );
@@ -67,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               InspectorController.turn(!isEnabled);
             },
-            tooltip: 'Increment',
+            tooltip: 'Toggle inspector',
             child: const Icon(Icons.search),
           );
         },
