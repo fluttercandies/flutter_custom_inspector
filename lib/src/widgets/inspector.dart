@@ -2226,6 +2226,11 @@ class CustomWidgetInspector extends StatefulWidget {
     @required this.child,
     @required this.selectButtonBuilder,
     this.tooltipBuilder,
+    this.tooltipBackgroundColor,
+    this.tooltipStyle,
+    this.maxTooltipLines,
+    this.highlightedRenderObjectFillColor,
+    this.highlightedRenderObjectBorderColor,
   })  : assert(child != null),
         super(key: key);
 
@@ -2239,6 +2244,16 @@ class CustomWidgetInspector extends StatefulWidget {
   final InspectorSelectButtonBuilder selectButtonBuilder;
 
   final String Function(Element element) tooltipBuilder;
+
+  final Color tooltipBackgroundColor;
+
+  final TextStyle tooltipStyle;
+
+  final int maxTooltipLines;
+
+  final Color highlightedRenderObjectFillColor;
+
+  final Color highlightedRenderObjectBorderColor;
 
   @override
   _CustomWidgetInspectorState createState() => _CustomWidgetInspectorState();
@@ -2467,6 +2482,13 @@ class _CustomWidgetInspectorState extends State<CustomWidgetInspector>
       _InspectorOverlay(
         selection: selection,
         tooltipBuilder: widget.tooltipBuilder,
+        tooltipBackgroundColor: widget.tooltipBackgroundColor,
+        tooltipStyle: widget.tooltipStyle,
+        maxTooltipLines: widget.maxTooltipLines,
+        highlightedRenderObjectFillColor:
+            widget.highlightedRenderObjectFillColor,
+        highlightedRenderObjectBorderColor:
+            widget.highlightedRenderObjectBorderColor,
       ),
     ]);
   }
@@ -2552,16 +2574,31 @@ class _InspectorOverlay extends LeafRenderObjectWidget {
     Key key,
     @required this.selection,
     this.tooltipBuilder,
+    this.tooltipBackgroundColor,
+    this.tooltipStyle,
+    this.maxTooltipLines,
+    this.highlightedRenderObjectFillColor,
+    this.highlightedRenderObjectBorderColor,
   }) : super(key: key);
 
   final InspectorSelection selection;
   final String Function(Element element) tooltipBuilder;
+  final Color tooltipBackgroundColor;
+  final TextStyle tooltipStyle;
+  final int maxTooltipLines;
+  final Color highlightedRenderObjectFillColor;
+  final Color highlightedRenderObjectBorderColor;
 
   @override
   _RenderInspectorOverlay createRenderObject(BuildContext context) {
     return _RenderInspectorOverlay(
       selection: selection,
       tooltipBuilder: tooltipBuilder,
+      tooltipBackgroundColor: tooltipBackgroundColor,
+      tooltipStyle: tooltipStyle,
+      maxTooltipLines: maxTooltipLines,
+      highlightedRenderObjectFillColor: highlightedRenderObjectFillColor,
+      highlightedRenderObjectBorderColor: highlightedRenderObjectBorderColor,
     );
   }
 
@@ -2577,10 +2614,20 @@ class _RenderInspectorOverlay extends RenderBox {
   _RenderInspectorOverlay({
     @required InspectorSelection selection,
     this.tooltipBuilder,
-  }) : _selection = selection,
-       assert(selection != null);
+    this.tooltipBackgroundColor,
+    this.tooltipStyle,
+    this.maxTooltipLines,
+    this.highlightedRenderObjectFillColor,
+    this.highlightedRenderObjectBorderColor,
+  })  : _selection = selection,
+        assert(selection != null);
 
   final String Function(Element element) tooltipBuilder;
+  final Color tooltipBackgroundColor;
+  final TextStyle tooltipStyle;
+  final int maxTooltipLines;
+  final Color highlightedRenderObjectFillColor;
+  final Color highlightedRenderObjectBorderColor;
 
   InspectorSelection get selection => _selection;
   InspectorSelection _selection;
@@ -2611,6 +2658,11 @@ class _RenderInspectorOverlay extends RenderBox {
       selection: selection,
       rootRenderObject: parent is RenderObject ? parent as RenderObject : null,
       tooltipBuilder: tooltipBuilder,
+      tooltipBackgroundColor: tooltipBackgroundColor,
+      tooltipStyle: tooltipStyle,
+      maxTooltipLines: maxTooltipLines,
+      highlightedRenderObjectFillColor: highlightedRenderObjectFillColor,
+      highlightedRenderObjectBorderColor: highlightedRenderObjectBorderColor,
     ));
   }
 }
@@ -2694,6 +2746,11 @@ class _InspectorOverlayLayer extends Layer {
     @required this.selection,
     @required this.rootRenderObject,
     this.tooltipBuilder,
+    this.tooltipBackgroundColor,
+    this.tooltipStyle,
+    this.maxTooltipLines,
+    this.highlightedRenderObjectFillColor,
+    this.highlightedRenderObjectBorderColor,
   })  : assert(overlayRect != null),
         assert(selection != null) {
     bool inDebugMode = false;
@@ -2724,6 +2781,16 @@ class _InspectorOverlayLayer extends Layer {
   final RenderObject rootRenderObject;
 
   final String Function(Element element) tooltipBuilder;
+
+  final Color tooltipBackgroundColor;
+
+  final TextStyle tooltipStyle;
+
+  final int maxTooltipLines;
+
+  final Color highlightedRenderObjectFillColor;
+
+  final Color highlightedRenderObjectBorderColor;
 
   _InspectorOverlayRenderState _lastState;
 
@@ -2781,12 +2848,14 @@ class _InspectorOverlayLayer extends Layer {
 
     final Paint fillPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = _kHighlightedRenderObjectFillColor;
+      ..color = highlightedRenderObjectFillColor ??
+          _kHighlightedRenderObjectFillColor;
 
     final Paint borderPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = _kHighlightedRenderObjectBorderColor;
+      ..color = highlightedRenderObjectBorderColor ??
+          _kHighlightedRenderObjectBorderColor;
 
     // Highlight the selected renderObject.
     final Rect selectedPaintRect = state.selected.rect.deflate(0.5);
@@ -2840,9 +2909,9 @@ class _InspectorOverlayLayer extends Layer {
         _textPainterMaxWidth != maxWidth) {
       _textPainterMaxWidth = maxWidth;
       _textPainter = TextPainter()
-        ..maxLines = _kMaxTooltipLines
+        ..maxLines = maxTooltipLines ?? _kMaxTooltipLines
         ..ellipsis = '...'
-        ..text = TextSpan(style: _messageStyle, text: message)
+        ..text = TextSpan(style: tooltipStyle ?? _messageStyle, text: message)
         ..textDirection = textDirection
         ..layout(maxWidth: maxWidth);
     }
@@ -2859,7 +2928,7 @@ class _InspectorOverlayLayer extends Layer {
 
     final Paint tooltipBackground = Paint()
       ..style = PaintingStyle.fill
-      ..color = _kTooltipBackgroundColor;
+      ..color = tooltipBackgroundColor ?? _kTooltipBackgroundColor;
     canvas.drawRect(
       Rect.fromPoints(
         tipOffset,
@@ -3095,7 +3164,7 @@ bool debugIsLocalCreationLocation(Object object) {
       isLocal = false;
     }
     isLocal =
-        CustomWidgetInspectorService.instance._isLocalCreationLocation(location);
+            CustomWidgetInspectorService.instance._isLocalCreationLocation(location);
     return true;
   }());
   return isLocal;
