@@ -55,7 +55,8 @@ class InspectorWrapper extends StatelessWidget {
             tooltipStyle: tooltipStyle,
             maxTooltipLines: maxTooltipLines,
             highlightedRenderObjectFillColor: highlightedRenderObjectFillColor,
-            highlightedRenderObjectBorderColor: highlightedRenderObjectBorderColor,
+            highlightedRenderObjectBorderColor:
+                highlightedRenderObjectBorderColor,
           );
         }
         return child;
