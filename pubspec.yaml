@@ -1,6 +1,6 @@
 name: custom_inspector
-description: A new Flutter package project.
-version: 1.0.0
+description: A customizable inspector that can called directly through Flutter apps.
+version: 1.0.1
 homepage: https://github.com/fluttercandies/flutter_custom_inspector
 
 environment:
