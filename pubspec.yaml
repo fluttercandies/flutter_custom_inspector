@@ -1,6 +1,6 @@
 name: custom_inspector
 description: A new Flutter package project.
-version: 0.1.0
+version: 1.0.0
 homepage: https://github.com/fluttercandies/flutter_custom_inspector
 
 environment:
