@@ -11,5 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  vector_math: any
+
 flutter:
   uses-material-design: true
