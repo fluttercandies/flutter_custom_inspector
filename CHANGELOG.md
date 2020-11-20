@@ -1,3 +1,4 @@
-## [0.0.1] - TODO: Add release date.
+## [0.1.0] - 2020-11-20
 
-* TODO: Describe initial release.
+* Support `tooltipBuilder`, `tooltipBackgroundColor`, `tooltipStyle`, `maxTooltipLines`,
+  `highlightedRenderObjectFillColor`, `highlightedRenderObjectBorderColor` customization.
